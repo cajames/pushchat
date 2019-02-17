@@ -22,7 +22,7 @@
     <div v-else ref="chatWindow" class="flex-1 pt-16 flex flex-col mx-4 overflow-y-auto">
       <span
         :key="message.id"
-        v-for="message in messages"
+        v-for="message in chatMessages"
         class="p-2 bg-grey-light self-start mb-2 rounded"
         :class="{ 'bg-primary-light': message.isSelf, 'self-end': message.isSelf }"
       >{{message.text}}</span>
@@ -40,62 +40,48 @@
 
 <script>
 import { Vue, Component, Prop } from "vue-property-decorator";
+import { namespace } from "vuex-class";
 import get from "lodash/get";
 
-@Component
+const UserStore = namespace("user");
+const ChatStore = namespace("chat");
+
+@Component({
+  beforeRouteLeave(to, from, next) {
+    this.clearChatUser();
+    next();
+  }
+})
 export default class ChatPage extends Vue {
-  user = {
-    id: "hello",
-    name: "Some user",
-    notification: false
-  };
+  @UserStore.State
+  currentUser;
+  @ChatStore.State
+  chatUser;
+  @ChatStore.Action
+  getChatMessages;
+  @ChatStore.Action
+  getChatUser;
+  @ChatStore.Action
+  clearChatUser;
+  @ChatStore.Getter
+  chatMessages;
 
-  messageData = [
-    {
-      id: "1",
-      text: "Here is a message",
-      user: "hello",
-      time: 11
-    },
-    {
-      id: "2",
-      text: "Here is another message",
-      user: "something",
-      time: 12
-    },
-    {
-      id: "3",
-      text: "Here is another message 2",
-      user: "hello",
-      time: 13
-    }
-  ];
-
-  get messages() {
-    return this.messageData
-      .sort((a, b) => a.createdAt > b.createdAt ? 1 : -1)
-      .map(item => {
-        // If other
-        if (item.user === this.user.id) {
-          item.isSelf = false;
-          return item;
-        } 
-        // If other
-        item.isSelf = true;
-        return item;
-      });
+  async created() {
+    const chatId = get(this, "$route.params.id");
+    await this.getChatUser(chatId);
+    await this.getChatMessages(chatId);
   }
 
   get userName() {
-    return get(this.user, "name", "Loading...");
+    return get(this, "chatUser.id", "Loading...");
   }
 
   get hasNotification() {
-    return this.user.notification ? "bell" : "bell-off";
+    return get(this, "chatUser.notification") ? "bell" : "bell-off";
   }
 
   get noMessages() {
-    return this.messages.length === 0;
+    return this.chatMessages.length === 0;
   }
 }
 </script>

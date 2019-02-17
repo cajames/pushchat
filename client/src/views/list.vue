@@ -5,16 +5,16 @@
       class="sideNav z-10 shadow-md flex flex-col justify-start absolute text-white h-screen bg-primary-light w-64"
       :class="{ showNav: showNav }"
     >
-      <!-- Nav -->
+      <!-- sidenav Nav -->
       <div class="flex justify-between items-center shadow bg-primary-dark p-4">
-        <span>Your name</span>
+        <span>{{ currentUser.id }}</span>
         <button class="text-white" @click="setNav(false)">
           <svgicon name="x" width="25" height="25"></svgicon>
         </button>
       </div>
 
       <!-- No other users -->
-      <div v-if="noUsers" class="flex-1 flex flex-col justify-center items-center">
+      <div v-if="noOtherUsers" class="flex-1 flex flex-col justify-center items-center">
         <svgicon name="users" height="100" width="100" class="mb-4"></svgicon>
         <span>No active users...</span>
       </div>
@@ -23,29 +23,34 @@
       <div v-else class="flex-1 flex flex-col items-stretch">
         <!-- Users -->
         <router-link
-          :to="`/chat/${user.id}`"
-          :key="user.id"
-          v-for="user in otherUsers"
+          :to="`/chat/${member.id}`"
+          :key="member.id"
+          v-for="member in otherMembers"
           class="p-4 no-underline border-b text-white flex items-center"
         >
           <!-- Logo -->
           <div
             class="mr-4 flex-none flex items-center justify-center bg-primary text-white text-center chatimage"
           >
-            <span class="uppercase text-xl">A</span>
+            <span class="uppercase text-xl">{{member.id.slice(0,1)}}</span>
           </div>
           <!-- Name -->
-          <span class="font-bold truncate">Some Other user</span>
+          <span class="font-bold truncate">{{member.id}}</span>
         </router-link>
       </div>
     </div>
 
     <!-- Nav -->
-    <div class="bg-primary absolute w-full p-4 text-white flex items-center shadow">
-      <button class="text-white mr-2" @click="setNav(true)">
-        <svgicon name="menu" width="25" height="25"></svgicon>
+    <div class="bg-primary absolute w-full p-4 text-white flex items-center justify-between shadow">
+      <div class="flex items-center">
+        <button class="text-white mr-2" @click="setNav(true)">
+          <svgicon name="menu" width="25" height="25"></svgicon>
+        </button>
+        <span>Pushchat</span>
+      </div>
+      <button class="text-white" @click="logout">
+        <svgicon name="log-out" width="25" height="25"></svgicon>
       </button>
-      <span>Pushchat</span>
     </div>
 
     <!-- v-if: Empty List -->
@@ -58,23 +63,23 @@
     <div v-else class="flex-1 flex pt-16 flex-col justify-start items-stretch">
       <!-- Chat Item -->
       <router-link
-        :to="`/chat/${user.id}`"
-        :key="user.id"
-        v-for="user in activeChats"
+        :to="`/chat/${chat.user}`"
+        :key="chat.user"
+        v-for="chat in activeChats"
         class="p-4 no-underline border-b flex items-center"
       >
         <!-- Logo -->
         <div
           class="mr-4 flex-none flex items-center justify-center bg-primary text-white text-center chatimage"
         >
-          <span class="uppercase text-xl">A</span>
+          <span class="uppercase text-xl">{{chat.user.slice(0, 1)}}</span>
         </div>
         <!-- Name and text -->
         <div class="flex flex-col text-left w-64">
-          <span class="font-bold text-black mb-1">Alexader Smith</span>
+          <span class="font-bold text-black mb-1">{{chat.user}}</span>
           <span
             class="text-grey-dark truncate"
-          >Here is some text which is going to be quite long and could me much longer</span>
+          >{{chat.text}}</span>
         </div>
       </router-link>
     </div>
@@ -83,13 +88,31 @@
 
 <script>
 import { Vue, Component, Prop } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+
+const UserStore = namespace("user");
 
 @Component
 export default class ListPage extends Vue {
-  activeChats = new Array(3).fill({id: 'hello'});
-  otherUsers = new Array(2).fill({id: 'hello'});
+  @UserStore.Action
+  getAllUsers;
+  @UserStore.Action
+  getAllUserChats;
+  @UserStore.Action
+  logout;
+  @UserStore.Getter
+  otherMembers;
+  @UserStore.Getter
+  activeChats;
+  @UserStore.State
+  currentUser;
 
   showNav = false;
+
+  async created() {
+    await this.getAllUsers()
+    await this.getAllUserChats()
+  }
 
   setNav(show = false) {
     this.showNav = show;
@@ -99,8 +122,8 @@ export default class ListPage extends Vue {
     return this.activeChats.length === 0;
   }
 
-  get noUsers() {
-    return this.otherUsers.length === 0;
+  get noOtherUsers() {
+    return this.otherMembers.length === 0;
   }
 }
 </script>
