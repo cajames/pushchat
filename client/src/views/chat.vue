@@ -73,7 +73,7 @@ export default class ChatPage extends Vue {
 
   get messages() {
     return this.messageData
-      .sort((a, b) => a.time > b.time ? 1 : -1)
+      .sort((a, b) => a.createdAt > b.createdAt ? 1 : -1)
       .map(item => {
         // If other
         if (item.user === this.user.id) {
