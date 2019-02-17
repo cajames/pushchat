@@ -4,10 +4,11 @@ import router from "./router";
 import store from "./store";
 import "./registerServiceWorker";
 
+// Plugins
+import "./plugins/svg"
+
 // Styles and icons
-import "./assets/svg.css"
 import "./assets/tailwind.css"
-import "./assets/icons"
 
 Vue.config.productionTip = false;
 
