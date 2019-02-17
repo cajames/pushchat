@@ -105,7 +105,7 @@ export default class ListPage extends Vue {
 }
 </script>
 
-<style>
+<style scoped>
 .chatimage {
   border-radius: 50%;
   width: 50px;

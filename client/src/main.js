@@ -5,15 +5,21 @@ import store from "./store";
 import "./registerServiceWorker";
 
 // Plugins
-import "./plugins/svg"
+import "./plugins/svg";
+import "./plugins/router";
 
 // Styles and icons
-import "./assets/tailwind.css"
+import "./assets/tailwind.css";
 
 Vue.config.productionTip = false;
 
-new Vue({
-  router,
-  store,
-  render: h => h(App)
-}).$mount("#app");
+const main = async () => {
+    await store.dispatch("user/getCurrentUserFromLocal", undefined, { root: true });
+    new Vue({
+        router,
+        store,
+        render: h => h(App)
+    }).$mount("#app");
+};
+
+main();
