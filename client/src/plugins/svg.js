@@ -5,5 +5,6 @@ import "@/assets/icons";
 
 // Default tag name is 'svgicon'
 Vue.use(SvgIcon, {
-  tagName: "svgicon"
+  tagName: "svgicon",
+  isStroke: true
 });
