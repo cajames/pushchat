@@ -6,9 +6,10 @@ Vue.use(Router);
 // Pages
 const RegisterPage = () =>
     import(/* webpackChunkName: "register" */ "./views/register.vue");
-
 const ListPage = () =>
     import(/* webpackChunkName: "list" */ "./views/list.vue");
+const ChatPage = () =>
+    import(/* webpackChunkName: "chat" */ "./views/chat.vue");
 
 const routes = [
     {
@@ -18,6 +19,10 @@ const routes = [
     {
         path: "/",
         component: ListPage
+    },
+    {
+        path: "/chat/:id",
+        component: ChatPage
     }
 ];
 

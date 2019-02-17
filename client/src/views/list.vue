@@ -2,7 +2,7 @@
   <div class="h-screen w-screen flex flex-col">
     <!-- SideNav -->
     <div
-      class="sideNav shadow-md flex flex-col justify-start absolute text-white h-screen bg-primary-light w-64"
+      class="sideNav z-10 shadow-md flex flex-col justify-start absolute text-white h-screen bg-primary-light w-64"
       :class="{ showNav: showNav }"
     >
       <!-- Nav -->
@@ -22,7 +22,12 @@
       <!-- Other users -->
       <div v-else class="flex-1 flex flex-col items-stretch">
         <!-- Users -->
-        <button v-for="user in otherUsers" class="p-4 border-b text-white flex items-center">
+        <router-link
+          :to="`/chat/${user.id}`"
+          :key="user.id"
+          v-for="user in otherUsers"
+          class="p-4 no-underline border-b text-white flex items-center"
+        >
           <!-- Logo -->
           <div
             class="mr-4 flex-none flex items-center justify-center bg-primary text-white text-center chatimage"
@@ -31,12 +36,12 @@
           </div>
           <!-- Name -->
           <span class="font-bold truncate">Some Other user</span>
-        </button>
+        </router-link>
       </div>
     </div>
 
     <!-- Nav -->
-    <div class="bg-primary p-4 text-white flex items-center shadow">
+    <div class="bg-primary absolute w-full p-4 text-white flex items-center shadow">
       <button class="text-white mr-2" @click="setNav(true)">
         <svgicon name="menu" width="25" height="25"></svgicon>
       </button>
@@ -44,15 +49,20 @@
     </div>
 
     <!-- v-if: Empty List -->
-    <div v-if="noChats" class="flex-1 flex flex-col justify-center items-center text-grey">
+    <div v-if="noChats" class="pt-16 flex-1 flex flex-col justify-center items-center text-grey">
       <svgicon name="box" class="mb-4" height="100" width="100"></svgicon>
       <span>No active chats</span>
     </div>
 
     <!-- v-else: Items List -->
-    <div v-else class="flex-1 flex flex-col justify-start items-stretch">
+    <div v-else class="flex-1 flex pt-16 flex-col justify-start items-stretch">
       <!-- Chat Item -->
-      <button v-for="item in activeChats" class="p-4 border-b flex items-center">
+      <router-link
+        :to="`/chat/${user.id}`"
+        :key="user.id"
+        v-for="user in activeChats"
+        class="p-4 no-underline border-b flex items-center"
+      >
         <!-- Logo -->
         <div
           class="mr-4 flex-none flex items-center justify-center bg-primary text-white text-center chatimage"
@@ -61,12 +71,12 @@
         </div>
         <!-- Name and text -->
         <div class="flex flex-col text-left w-64">
-          <span class="font-bold mb-1">Alexader Smith</span>
+          <span class="font-bold text-black mb-1">Alexader Smith</span>
           <span
             class="text-grey-dark truncate"
           >Here is some text which is going to be quite long and could me much longer</span>
         </div>
-      </button>
+      </router-link>
     </div>
   </div>
 </template>
@@ -76,13 +86,13 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 
 @Component
 export default class ListPage extends Vue {
-  activeChats = new Array(3);
-  otherUsers = new Array(4);
+  activeChats = new Array(3).fill({id: 'hello'});
+  otherUsers = new Array(2).fill({id: 'hello'});
 
-  showNav = true;
+  showNav = false;
 
   setNav(show = false) {
-    this.showNav = show
+    this.showNav = show;
   }
 
   get noChats() {
