@@ -74,6 +74,33 @@ server.use((req, res, next) => {
   next();
 });
 
+// Broadcast URL
+server.use((req, res, next) => {
+  if (req.method === "POST" && req.originalUrl === "/api/broadcast") {
+    const origin = get(req, "headers.origin", "");
+    const message = req.body;
+
+    fs.readFile(`./db.json`, "utf8", (err, data) => {
+      const db = JSON.parse(data);
+      const users = db.users;
+
+      users.map(user => {
+        const notificationSub = get(user, "notification");
+        if (notificationSub) {
+          const payload = {
+            title: `New message via Broadcast `,
+            message: message.text,
+            redirectUrl: `${origin}/`
+          };
+          webpush.sendNotification(notificationSub, JSON.stringify(payload));
+        }
+      });
+      console.log("broadcast sent");
+    });
+  }
+  next();
+});
+
 // Use default router
 server.use("/api", middlewares);
 server.use("/api", router);

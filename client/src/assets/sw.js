@@ -1,5 +1,6 @@
 console.log("Loading from Service worker!!");
 
+// Offline Caching
 workbox.routing.registerRoute("/", workbox.strategies.networkFirst());
 workbox.routing.registerRoute(
   new RegExp(".(js|css|png)$"),
@@ -11,8 +12,6 @@ self.addEventListener("push", async e => {
   const data = e.data.json();
   console.log("Push Received...");
 
-  const url = data.chatUrl;
-
   // Don't show if active window
   const isAlreadyActive = await isClientFocused();
   if (isAlreadyActive) {
@@ -20,6 +19,10 @@ self.addEventListener("push", async e => {
   }
 
   // Have relevant actions
+  const actions = [{ action: "seeAll", title: "See all Messages" }];
+  if (data.chatUser) {
+    actions.push({ action: "reply", title: `Reply to ${data.chatUser}` });
+  }
 
   // Show's notification
   self.registration.showNotification(data.title, {
@@ -30,10 +33,7 @@ self.addEventListener("push", async e => {
     },
     badge: "/img/icons/favicon-32x32.png",
     icon: "/img/icons/android-chrome-192x192.png",
-    actions: [
-      { action: "seeAll", title: "See all Messages" },
-      { action: "reply", title: `Reply to ${data.chatUser}` }
-    ]
+    actions
   });
 });
 
