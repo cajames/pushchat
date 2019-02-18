@@ -11,6 +11,7 @@
         class="p-4 mb-4 text-center bg-primary-lightest"
         placeholder="Enter a username"
         v-model="userName"
+        @keyup.enter="register"
       >
       <button
         class="p-4 shadow bg-primary-darker uppercase font-bold tracking-wide rounded text-white"

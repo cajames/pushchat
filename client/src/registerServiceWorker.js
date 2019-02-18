@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
 import { register } from "register-service-worker";
+import store from "./store";
 
 if (process.env.NODE_ENV === "production") {
   register(`${process.env.BASE_URL}service-worker.js`, {
@@ -10,7 +11,10 @@ if (process.env.NODE_ENV === "production") {
           "For more details, visit https://goo.gl/AFskqB"
       );
     },
-    registered() {
+    registered(registration) {
+      store.commit("sw/saveServiceWorkerRegistration", registration, {
+        root: true
+      });
       console.log("Service worker has been registered.");
     },
     cached() {

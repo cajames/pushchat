@@ -5,10 +5,12 @@ Vue.use(Vuex);
 
 import user from "./store/user";
 import chat from "./store/chat";
+import sw from "./store/sw";
 
 export default new Vuex.Store({
-    modules: {
-        user,
-        chat
-    }
+  modules: {
+    user,
+    chat,
+    sw
+  }
 });

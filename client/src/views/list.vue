@@ -38,6 +38,45 @@
           <span class="font-bold truncate">{{member.id}}</span>
         </router-link>
       </div>
+
+      <!-- Service Worker Prompts -->
+      <div class="flex flex-col items-stretch">
+        <!-- Install App -->
+        <button
+          v-if="hasInstallPrompt"
+          class="p-4 flex items-center text-white bg-primary border-b"
+          @click="promptAppInstall"
+        >
+          <svgicon name="download" height="20" width="20" class="mr-2"></svgicon>
+          <span>Install app to desktop</span>
+        </button>
+
+        <!-- Push blocked -->
+        <p v-if="notificationStatus === 'blocked'" class="p-4 bg-primary flex-inline items-center">
+          <svgicon name="bell-off" height="20" width="20" class="mr-2"></svgicon>
+          <span>Notifications are blocked</span>
+        </p>
+
+        <!-- Disable Push -->
+        <button
+          v-else-if="notificationStatus === 'granted'"
+          class="p-4 bg-primary flex items-center text-white"
+          @click="disablePushNotifications"
+        >
+          <svgicon name="bell-off" height="20" width="20" class="text-white mr-2"></svgicon>
+          <span>Disable Notifications</span>
+        </button>
+
+        <!-- Enable Push -->
+        <button
+          v-else
+          class="p-4 bg-primary flex items-center text-white"
+          @click="enablePushNotifications"
+        >
+          <svgicon name="bell" height="20" width="20" class="text-white mr-2"></svgicon>
+          <span>Enable Notifications</span>
+        </button>
+      </div>
     </div>
 
     <!-- Nav -->
@@ -77,9 +116,7 @@
         <!-- Name and text -->
         <div class="flex flex-col text-left w-64">
           <span class="font-bold text-black mb-1">{{chat.user}}</span>
-          <span
-            class="text-grey-dark truncate"
-          >{{chat.text}}</span>
+          <span class="text-grey-dark truncate">{{chat.text}}</span>
         </div>
       </router-link>
     </div>
@@ -91,6 +128,7 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 import { namespace } from "vuex-class";
 
 const UserStore = namespace("user");
+const SwStore = namespace("sw");
 
 @Component
 export default class ListPage extends Vue {
@@ -110,17 +148,30 @@ export default class ListPage extends Vue {
   activeChats;
   @UserStore.State
   currentUser;
+  @SwStore.Action
+  promptAppInstall;
+  @SwStore.Getter
+  hasInstallPrompt;
+  @SwStore.Getter
+  notificationStatus;
+  @SwStore.Action
+  setUpPushNotifications;
+  @SwStore.Action
+  enablePushNotifications;
+  @SwStore.Action
+  disablePushNotifications;
 
   showNav = false;
 
   async created() {
-    await this.getAllUsers()
-    await this.getAllUserChats()
-    this.startPollingUser()
+    await this.getAllUsers();
+    await this.getAllUserChats();
+    this.setUpPushNotifications();
+    this.startPollingUser();
   }
 
   beforeDestroy() {
-    this.endPollingUser()
+    this.endPollingUser();
   }
 
   setNav(show = false) {

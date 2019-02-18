@@ -4,13 +4,20 @@ const server = jsonServer.create();
 const middlewares = jsonServer.defaults();
 const express = require("express");
 const get = require("lodash/get");
+const webpush = require("web-push");
+const fs = require("fs");
 
-const dataModel = {
-  users: [],
-  messages: []
-};
+// Configure web-push
+const publicVapidKey =
+  "BBU8orMQ7mdAobZYAQUgQ0mhkUiMO1KVjToepH_orj4JD2zChcoH_gedtK6Hya-QBHUQ17-_aC9DgyLMx-vcmmQ";
+const privateVapidKey = "-AVd4aJXw2IJssA42nN-F0tywIIaWGzX9WobuNxQeUA";
+webpush.setVapidDetails(
+  "mailto:chris@webglowit.net",
+  publicVapidKey,
+  privateVapidKey
+);
 
-const router = jsonServer.router(dataModel);
+const router = jsonServer.router("./db.json");
 
 // Set default middlewares (logger, static, cors and no-cache)
 server.use(cookieParser());
@@ -28,6 +35,40 @@ server.post("/api/setUser", (req, res) => {
 server.use((req, res, next) => {
   if (req.method === "POST") {
     req.body.createdAt = Date.now();
+  }
+  // Continue to JSON Server router
+  next();
+});
+
+// Trigger push
+server.use((req, res, next) => {
+  if (req.method === "POST" && req.originalUrl === "/api/messages") {
+    fs.readFile(`./db.json`, "utf8", (err, data) => {
+      if (err) {
+        console.error("Failed to push message");
+        return;
+      }
+
+      // get all required props
+      const db = JSON.parse(data);
+      const message = req.body;
+      const user = db.users.find(user => user.id === message.to);
+      const notificationSub = get(user, "notification");
+
+      const origin = get(req, "headers.origin", "");
+      // If sub, push
+      if (notificationSub) {
+        const payload = {
+          title: `New message from ${message.from}`,
+          message: message.text,
+          chatUser: message.from,
+          chatUrl: `${origin}/chat/${message.from}`,
+          redirectUrl: `${origin}/?chat=${message.from}`
+        };
+        webpush.sendNotification(notificationSub, JSON.stringify(payload));
+        console.log("sent notification");
+      }
+    });
   }
   // Continue to JSON Server router
   next();

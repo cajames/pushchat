@@ -80,6 +80,15 @@ const actions = {
     router.push("/");
   },
 
+  // Update User
+  async updateCurrentUser({ state, commit }, payload) {
+    const id = get(state, "currentUser.id");
+    const { data: entry } = await axios.patch(`/api/users/${id}`, {
+      ...payload
+    });
+    commit("saveCurrentUser", entry);
+  },
+
   // Startup user from localStorage
   async getCurrentUserFromLocal({ commit, dispatch }) {
     try {
