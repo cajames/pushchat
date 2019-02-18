@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "NODE_ENV=production nodemon --watch server.js --watch ./public --inspect server.js",
+    "dev": "nodemon --watch server.js --watch ./public --inspect server.js",
     "start": "NODE_ENV=production node server.js",
     "db": "echo '{\"users\":[],\"messages\":[]}' > db.json",
     "build": "yarn db"

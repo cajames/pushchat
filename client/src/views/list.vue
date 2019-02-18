@@ -14,28 +14,30 @@
       </div>
 
       <!-- No other users -->
-      <div v-if="noOtherUsers" class="flex-1 flex flex-col justify-center items-center">
+      <div v-if="noOtherUsers" class="shadow-inner flex-1 flex flex-col justify-center items-center">
         <svgicon name="users" height="100" width="100" class="mb-4"></svgicon>
         <span>No active users...</span>
       </div>
 
       <!-- Other users -->
-      <div v-else class="flex-1 flex flex-col items-stretch">
+      <div v-else class="shadow-inner flex-1 flex flex-col items-stretch overflow-y-auto">
         <!-- Users -->
         <router-link
           :to="`/chat/${member.id}`"
           :key="member.id"
           v-for="member in otherMembers"
-          class="p-4 no-underline border-b text-white flex items-center"
+          class="no-underline border-b text-white block"
         >
-          <!-- Logo -->
-          <div
-            class="mr-4 flex-none flex items-center justify-center bg-primary text-white text-center chatimage"
-          >
-            <span class="uppercase text-xl">{{member.id.slice(0,1)}}</span>
+          <div class="p-2 flex items-center">
+            <!-- Logo -->
+            <div
+              class="mr-4 flex-none flex items-center justify-center bg-primary text-white text-center chatimage"
+            >
+              <span class="uppercase text-xl">{{member.id.slice(0,1)}}</span>
+            </div>
+            <!-- Name -->
+            <span class="font-bold truncate">{{member.id}}</span>
           </div>
-          <!-- Name -->
-          <span class="font-bold truncate">{{member.id}}</span>
         </router-link>
       </div>
 
@@ -99,24 +101,26 @@
     </div>
 
     <!-- v-else: Items List -->
-    <div v-else class="flex-1 flex pt-16 flex-col justify-start items-stretch">
+    <div v-else class="flex-1 flex pt-16 flex-col justify-start items-stretch overflow-y-auto">
       <!-- Chat Item -->
       <router-link
         :to="`/chat/${chat.user}`"
         :key="chat.user"
         v-for="chat in activeChats"
-        class="p-4 no-underline border-b flex items-center"
+        class="block no-underline border-b"
       >
-        <!-- Logo -->
-        <div
-          class="mr-4 flex-none flex items-center justify-center bg-primary text-white text-center chatimage"
-        >
-          <span class="uppercase text-xl">{{chat.user.slice(0, 1)}}</span>
-        </div>
-        <!-- Name and text -->
-        <div class="flex flex-col text-left w-64">
-          <span class="font-bold text-black mb-1">{{chat.user}}</span>
-          <span class="text-grey-dark truncate">{{chat.text}}</span>
+        <div class="p-4 flex items-center">
+          <!-- Logo -->
+          <div
+            class="mr-4 flex-none flex items-center justify-center bg-primary text-white text-center chatimage"
+          >
+            <span class="uppercase text-xl">{{chat.user.slice(0, 1)}}</span>
+          </div>
+          <!-- Name and text -->
+          <div class="flex flex-col text-left w-64">
+            <span class="font-bold text-black mb-1">{{chat.user}}</span>
+            <span class="text-grey-dark truncate">{{chat.text}}</span>
+          </div>
         </div>
       </router-link>
     </div>

@@ -51,7 +51,7 @@ self.addEventListener(
     } else if (event.action === "reply") {
       promise = openOrFocusUrl(chatUrl, redirectUrl);
     } else {
-      promise = openOrFocusUrl(chatUrl, redirectUrl);
+      promise = openOrFocusUrl(chatUrl || "/", redirectUrl || "/");
     }
 
     event.waitUntil(promise);
