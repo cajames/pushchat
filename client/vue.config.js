@@ -18,7 +18,10 @@ module.exports = {
 
     workboxPluginMode: "InjectManifest",
     workboxOptions: {
-      swSrc: "src/assets/sw.js"
+      swSrc: "src/assets/sw.js",
+      swDest: "service-worker.js",
+      importWorkboxFrom: "local",
+      // include: [/\.html$/, /\.js$/]
     }
   }
 };

@@ -7,6 +7,7 @@ import "./registerServiceWorker";
 // Plugins
 import "./plugins/svg";
 import "./plugins/router";
+import "./plugins/sw";
 
 // Styles and icons
 import "./assets/tailwind.css";
