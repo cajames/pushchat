@@ -30,8 +30,14 @@
 
     <!-- Input -->
     <div class="p-2 bg-primary-dark flex">
-      <input type="text" placeholder="Write your message..." class="flex-1 px-2 py-4">
-      <button class="p-2 p-4 bg-primary-darker text-white" title="Send">
+      <input
+        type="text"
+        placeholder="Write your message..."
+        class="flex-1 px-2 py-4"
+        v-model="message"
+        @keyup.enter="sendMessage"
+      >
+      <button class="p-2 p-4 bg-primary-darker text-white" title="Send" @click="sendMessage">
         <svgicon name="send" height="20" width="20" class></svgicon>
       </button>
     </div>
@@ -63,13 +69,26 @@ export default class ChatPage extends Vue {
   getChatUser;
   @ChatStore.Action
   clearChatUser;
+  @ChatStore.Action
+  sendNewMessage;
+  @ChatStore.Action
+  startPollingMessages;
+  @ChatStore.Action
+  endPollingMessages;
   @ChatStore.Getter
   chatMessages;
+
+  message = "";
 
   async created() {
     const chatId = get(this, "$route.params.id");
     await this.getChatUser(chatId);
     await this.getChatMessages(chatId);
+    this.startPollingMessages();
+  }
+
+  beforeDestroy() {
+    this.endPollingMessages();
   }
 
   get userName() {
@@ -82,6 +101,11 @@ export default class ChatPage extends Vue {
 
   get noMessages() {
     return this.chatMessages.length === 0;
+  }
+
+  sendMessage() {
+    this.sendNewMessage(this.message);
+    this.message = "";
   }
 }
 </script>

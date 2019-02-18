@@ -100,6 +100,10 @@ export default class ListPage extends Vue {
   getAllUserChats;
   @UserStore.Action
   logout;
+  @UserStore.Action
+  startPollingUser;
+  @UserStore.Action
+  endPollingUser;
   @UserStore.Getter
   otherMembers;
   @UserStore.Getter
@@ -112,6 +116,11 @@ export default class ListPage extends Vue {
   async created() {
     await this.getAllUsers()
     await this.getAllUserChats()
+    this.startPollingUser()
+  }
+
+  beforeDestroy() {
+    this.endPollingUser()
   }
 
   setNav(show = false) {
